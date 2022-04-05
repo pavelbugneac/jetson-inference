@@ -57,7 +57,38 @@ output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv)
 import pyautogui
 
 nose_y = 0
-jump = 0
+
+def left(left_elbow, left_shoulder):
+    try:
+        if (left_elbow.x - left_shoulder.x) > 100:
+            print("<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>.")
+            pyautogui.keyDown('a')
+        else:
+            pyautogui.keyUp('a')
+            del left_elbow
+            del left_shoulder
+    except:
+        pyautogui.keyUp('a')
+
+def right(right_elbow, right_shoulder):
+    try:
+        if (right_elbow.x - right_shoulder.x) > 100:
+            print("<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>.")
+            pyautogui.keyDown('d')
+        else:
+            pyautogui.keyUp('d')
+            del right_elbow
+            del right_shoulder
+    except:
+        pyautogui.keyUp('d')
+
+def jump(elbow, shoulder):
+    if (elbow.y - shoulder.y) > 100:
+        pyautogui.keyDown('w')
+    else:
+        pyautogui.keyUp('w')
+        del elbow
+        del shoulder
 
 # process frames until the user exits
 while True:
@@ -83,6 +114,7 @@ while True:
             # print('test1')
             # left_shoulder_idx = pose.FindKeypoint('left_shoulder')
             # print('test2')
+
             if point.ID == 7:
                 left_elbow = point
                 print(left_elbow)
@@ -102,42 +134,32 @@ while True:
                 print(nose)
 
                 #pyautogui.press('d')
-        try:
-            if (left_elbow.x - left_shoulder.x) > 100:
-                print("<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>.")
-                pyautogui.keyDown('a')
-            else:
-                pyautogui.keyUp('a')
-            del left_elbow
-            del left_shoulder
-        except:
-            pyautogui.keyUp('a')
+        left(left_elbow, left_shoulder)
+
+        right(right_elbow, right_shoulder)
 
         try:
-            if (right_elbow.x - right_shoulder.x) < 100:
-                print("<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>.")
-                pyautogui.keyDown('d')
-            else:
-                pyautogui.keyUp('d')
-            del right_elbow
-            del right_shoulder
+            jump(left_elbow, left_shoulder)
         except:
-            pyautogui.keyUp('d')
+            pyautogui.keyUp('w')
 
         try:
-            if (nose.y - nose_y) > 20:
-                print("<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>.")
-                pyautogui.keyDown('w')
-                # jump=0
-            elif jump>300:
-                pyautogui.keyUp('w')
-                jump=0
+            jump(right_elbow, right_shoulder)
         except:
-            # pyautogui.keyUp('w')
-            pass
+            pyautogui.keyUp('w')
 
-    nose_y = nose.y
-    jump+=1
+        # try:
+        #     if (nose.y - nose_y) > 20:
+        #         print("<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>.")
+        #         pyautogui.keyDown('w')
+        #         # jump=0
+        #     else:
+        #         pyautogui.keyUp('w')
+        # except:
+        #     # pyautogui.keyUp('w')
+        #     pass
+
+    # nose_y = nose.y
 
         # # if the keypoint index is < 0, it means it wasn't found in the image
         # if left_wrist_idx < 0 or left_shoulder_idx < 0:
